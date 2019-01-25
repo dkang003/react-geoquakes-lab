@@ -1,25 +1,47 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import MapContainer from './components/MapContainer';
+import QuakeContainer from './components/QuakeContainer';
+import axios from 'axios';
+
+
 
 class App extends Component {
+  state ={
+    results: []
+  }
+
+  // getQuake = (e) => {
+  //   e.preventDefault();
+  //   axios.get("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=6")
+  //   .then( ({ data }) => {
+  //     this.setState({ results: data.features })
+  //   })
+  // }
+
+  componentDidMount() {
+    fetch("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=6")
+    .then(res => res.json())
+    .then((data) => {
+      // console.log(data)
+      this.setState({ results: data.features })
+    })
+  }
+
   render() {
+    let { results } = this.state;
+    
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="app">
+        <div className="mapContainer">
+          <MapContainer />
+        </div>
+        <div className="quakeContainer">
+          <form onSubmit={this.getQuake}>
+            <input type="submit" value="Get Quakes" />
+          </form>
+          <h1>Earthquakes from the past week: </h1>
+          <QuakeContainer results={ results } />
+        </div>
       </div>
     );
   }
